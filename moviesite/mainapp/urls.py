@@ -3,5 +3,5 @@ from mainapp.views import *
 
 urlpatterns = [
     path('', main_page),
-    path('categories', categories)
+    path('categories/<slug:category_name>/', categories)
 ]
