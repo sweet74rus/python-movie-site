@@ -3,6 +3,6 @@ from mainapp.views import *
 
 urlpatterns = [
     path('', main_page, name='home'),
-    path('categories/<slug:category_name>/', categories),
-    path('about/', about, name='about')
+    path('about/', about, name='about'),
+    path('movie/<int:movie_id>/', show_movie, name='movie')
 ]

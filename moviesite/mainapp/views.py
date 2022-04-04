@@ -2,16 +2,22 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from .models import *
 
-movies = Movie.objects.all()
+context = {
+    'title': '',
+    'movies': Movie.objects.all(),
+    'categories': ['Ужасы', 'Боевики', 'Комедии'],
+}
 
 def main_page(request):
-    return render(request, 'mainapp/index.html', {'title': 'Главная', 'movies': movies})
+    context['title'] = 'Главная'
+    return render(request, 'mainapp/index.html', context)
 
 def about(request):
-    return render(request, 'mainapp/about.html', {'title': 'О сайте'})
+    context['title'] = 'О сайте'
+    return render(request, 'mainapp/about.html', context)
 
-def categories(request, category_name):
-    return HttpResponse(f"<h1>Категории фильмов</h1><p>{category_name}</p>")
+def show_movie(request, movie_id):
+    return HttpResponse(f'Отображение фильма с id = {movie_id}')
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound('<h1>Страница не найдена :(</h1>')
