@@ -28,10 +28,10 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Жанры</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#!">Все жанры</a></li>
+                                <li><a class="dropdown-item" href="{% url 'home' %}">Все жанры</a></li>
                                 <li><hr class="dropdown-divider" /></li>
                                 {% for g in genre %}
-                                <li><a class="dropdown-item" href="#!">{{g}}</a></li>
+                                <li><a class="dropdown-item" href="{{ g.get_absolute_url }}">{{g}}</a></li>
                                 {% endfor %}
                             </ul>
                         </li>
