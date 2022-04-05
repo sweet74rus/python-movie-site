@@ -12,6 +12,7 @@ context = {
 
 def main_page(request):
     context['title'] = 'Главная'
+    context['movies'] = Movie.objects.all()
     return render(request, 'mainapp/index.html', context)
 
 

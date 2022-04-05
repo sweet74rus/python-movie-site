@@ -1,13 +1,13 @@
 {% extends 'mainapp/base.html' %}
 
 {% block content %}
-<ul>
-    {% for movie in movies %}
 
+<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+    {% for movie in movies %}
     <div class="col mb-5">
         <div class="card h-100">
             <!-- Product image-->
-            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+            <img class="card-img-top" src="{{ movie.movie_image.url }}" alt="..." />
             <!-- Product details-->
             <div class="card-body p-4">
                 <div class="text-center">
@@ -24,7 +24,7 @@
             </div>
         </div>
     </div>
-
     {% endfor %}
-</ul>
+</div>
+
 {% endblock %}
