@@ -6,6 +6,7 @@ context = {
     'title': '',
     'movies': Movie.objects.all(),
     'categories': ['Ужасы', 'Боевики', 'Комедии'],
+    'genre': Genre.objects.all()
 }
 
 def main_page(request):
