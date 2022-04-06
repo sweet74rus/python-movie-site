@@ -1,4 +1,5 @@
 {% load static %}
+{% load mainapp_tags %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -30,6 +31,7 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="{% url 'home' %}">Все жанры</a></li>
                                 <li><hr class="dropdown-divider" /></li>
+                                {% get_genre as genre%}
                                 {% for g in genre %}
                                 <li><a class="dropdown-item" href="{{ g.get_absolute_url }}">{{g}}</a></li>
                                 {% endfor %}
