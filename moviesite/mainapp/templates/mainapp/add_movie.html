@@ -3,8 +3,12 @@
 
 <form action="{% url 'add_movie' %}" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Добавить</button>
+
+    {% for f in form %}
+    <p><label for="{{ f.id_for_label }}">{{ f.label }}: </label>{{ f }}</p>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-dark">Добавить</button>
 </form>
 
 {% endblock %}

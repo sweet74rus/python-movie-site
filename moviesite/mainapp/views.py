@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import *
 from .models import *
@@ -31,12 +31,18 @@ def add_movie(request):
 
     if request.method == 'POST':
         form = AddMovieForm(request.POST)
+        context['form'] = form
         if form.is_valid():
-            print(form.cleaned_data)
+            try:
+                Movie.objects.create(**form.cleaned_data)
+                return redirect('home')
+            except:
+                form.add_error(None, 'Ошибка добавления фильма')
         else:
             form = AddMovieForm()
+            context['form'] = form
 
-    context['form'] = form
+
     return render(request, 'mainapp/add_movie.html', context)
 
 
