@@ -30,19 +30,17 @@ def add_movie(request):
     context['current_genre'] = 'Добавить фильм'
 
     if request.method == 'POST':
-        form = AddMovieForm(request.POST)
-        context['form'] = form
+        form = AddMovieForm(request.POST, request.FILES)
+
         if form.is_valid():
-            try:
-                Movie.objects.create(**form.cleaned_data)
-                return redirect('home')
-            except:
-                form.add_error(None, 'Ошибка добавления фильма')
-        else:
-            form = AddMovieForm()
+            form.save()
             context['form'] = form
+            return redirect('home')
 
+    else:
+        form = AddMovieForm()
 
+    context['form'] = form
     return render(request, 'mainapp/add_movie.html', context)
 
 

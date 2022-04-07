@@ -1,26 +1,28 @@
 from django import forms
+from django.core.exceptions import ValidationError
+
 from .models import *
 
 
-class AddMovieForm(forms.Form):
-    title = forms.CharField(max_length=255, label='Название фильма', widget=forms.TextInput(attrs={
-        'class': 'form-control',
-    }))
+class AddMovieForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['genre'].empty_label = 'Жанр не выбран'
 
-    slug = forms.SlugField(max_length=255, label='URL', widget=forms.TextInput(attrs={
-        'class': 'form-control',
-    }))
+    class Meta:
+        model = Movie
+        fields = ['title', 'slug', 'movie_image', 'rating', 'genre', 'description']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'slug': forms.TextInput(attrs={'class': 'form-control'}),
+            'rating': forms.TextInput(attrs={'class': 'form-control'}),
+            'genre': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'cols': 60, 'rows': 10, 'class': 'form-control'})
+        }
 
-    rating = forms.FloatField(label='Рейтинг', widget=forms.TextInput(attrs={
-        'class': 'form-control',
-    }))
+    def clean_title(self):
+        title = self.cleaned_data['title']
+        if len(title) > 200:
+            raise ValidationError('Длина превышает 200 символов')
 
-    genre = forms.ModelChoiceField(queryset=Genre.objects.all(), label='Жанр', empty_label='Жанр не выбран', widget=forms.Select(attrs={
-        'class':'form-control',
-    }))
-
-    description = forms.CharField(widget=forms.Textarea(attrs={
-        'cols': 60,
-        'rows': 10,
-        'class': 'form-control'
-    }), label='Описание фильма')
+        return title
