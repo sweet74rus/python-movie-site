@@ -1,5 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, get_object_or_404
+
+from .forms import *
 from .models import *
 
 context = {
@@ -19,7 +21,23 @@ def main_page(request):
 
 def about(request):
     context['title'] = 'О сайте'
+    context['current_genre'] = 'О сайте'
     return render(request, 'mainapp/about.html', context)
+
+
+def add_movie(request):
+    context['title'] = 'Добавить фильм'
+    context['current_genre'] = 'Добавить фильм'
+
+    if request.method == 'POST':
+        form = AddMovieForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+        else:
+            form = AddMovieForm()
+
+    context['form'] = form
+    return render(request, 'mainapp/add_movie.html', context)
 
 
 def show_movie(request, movie_slug):
