@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import ListView
 
 from .forms import *
 from .models import *
@@ -10,13 +11,19 @@ context = {
     'current_genre': 'Все жанры',
 }
 
+class MovieHome(ListView):
+    model = Movie
+    template_name = 'mainapp/index.html'
+    context_object_name = 'movies'
 
-def main_page(request):
-    context['title'] = 'Главная'
-    context['movies'] = Movie.objects.all()
-    context['current_genre'] = 'Все жанры'
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    return render(request, 'mainapp/index.html', context)
+        context['title'] = 'Главная'
+        context['movies'] = Movie.objects.all()
+        context['current_genre'] = 'Все жанры'
+
+        return context
 
 
 def about(request):
@@ -51,15 +58,19 @@ def show_movie(request, movie_slug):
 
     return render(request, 'mainapp/movie_info.html', context)
 
+class MovieGenre(ListView):
+    model = Movie
+    template_name = 'mainapp/index.html'
+    context_object_name = 'movies'
 
-def show_genre(request, genre_id):
-    context['movies'] = Movie.objects.filter(genre_id=genre_id)
-    context['current_genre'] = Genre.objects.all()[genre_id - 1]
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    if len(context['movies']) == 0:
-        raise Http404()
+        context['movies'] = Movie.objects.filter(genre__slug=self.kwargs['genre_slug'])
+        context['title'] = context['movies'][0].genre
+        context['current_genre'] = context['movies'][0].genre
 
-    return render(request, 'mainapp/index.html', context)
+        return context
 
 
 def pageNotFound(request, exception):
