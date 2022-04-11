@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView
 
 from .forms import *
+from .models import *
 from .utils import *
 
 
@@ -45,9 +46,10 @@ class ShowMovie(DataMixin, DetailView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(
             title=context['movies'],
-            current_genre=context['movies']
+            current_genre=context['movies'],
+            movies=context['movies']
         )
-
+        print(dict(list(context.items()) + list(c_def.items())))
         return dict(list(context.items()) + list(c_def.items()))
 
 class AddMovie(DataMixin, CreateView):
