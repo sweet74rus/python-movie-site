@@ -3,31 +3,22 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView
 
 from .forms import *
-from .models import *
-
-context = {
-    'title': '',
-    'movies': Movie.objects.all(),
-    'current_genre': 'Все жанры',
-}
+from .utils import *
 
 
-class MovieHome(ListView):
+class MovieHome(DataMixin, ListView):
     model = Movie
     template_name = 'mainapp/index.html'
     context_object_name = 'movies'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Главная')
 
-        context['title'] = 'Главная'
-        context['movies'] = Movie.objects.all()
-        context['current_genre'] = 'Все жанры'
-
-        return context
+        return dict(list(context.items()) + list(c_def.items()))
 
 
-class MovieGenre(ListView):
+class MovieGenre(DataMixin, ListView):
     model = Movie
     template_name = 'mainapp/index.html'
     context_object_name = 'movies'
@@ -35,15 +26,16 @@ class MovieGenre(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(
+            title=context['movies'][0].genre,
+            movies=Movie.objects.filter(genre__slug=self.kwargs['genre_slug']),
+            current_genre=Movie.objects.filter(genre__slug=self.kwargs['genre_slug'])[0].genre
+        )
 
-        context['movies'] = Movie.objects.filter(genre__slug=self.kwargs['genre_slug'])
-        context['title'] = context['movies'][0].genre
-        context['current_genre'] = context['movies'][0].genre
-
-        return context
+        return dict(list(context.items()) + list(c_def.items()))
 
 
-class ShowMovie(DetailView):
+class ShowMovie(DataMixin, DetailView):
     model = Movie
     template_name = 'mainapp/movie_info.html'
     slug_url_kwarg = 'movie_slug'
@@ -51,26 +43,28 @@ class ShowMovie(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = context['movies']
-        context['current_genre'] = context['movies']
-        return context
+        c_def = self.get_user_context(
+            title=context['movies'],
+            current_genre=context['movies']
+        )
 
-class AddMovie(CreateView):
+        return dict(list(context.items()) + list(c_def.items()))
+
+class AddMovie(DataMixin, CreateView):
     form_class = AddMovieForm
     template_name = 'mainapp/add_movie.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(
+            title='Добавить фильм',
+            current_genre='Добавить фильм'
+        )
 
-        context['title'] = 'Добавить фильм'
-        context['current_genre'] = 'Добавить фильм'
-
-        return context
+        return dict(list(context.items()) + list(c_def.items()))
 
 def about(request):
-    context['title'] = 'О сайте'
-    context['current_genre'] = 'О сайте'
-    return render(request, 'mainapp/about.html', context)
+    return render(request, 'mainapp/about.html')
 
 
 def pageNotFound(request, exception):
