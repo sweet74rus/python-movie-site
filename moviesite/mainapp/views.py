@@ -1,6 +1,8 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import *
 from .models import *
@@ -16,7 +18,7 @@ class MovieHome(DataMixin, ListView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title='Главная')
 
-        return dict(list(context.items()) + list(c_def.items()))
+        return context | c_def
 
 
 class MovieGenre(DataMixin, ListView):
@@ -33,7 +35,7 @@ class MovieGenre(DataMixin, ListView):
             current_genre=Movie.objects.filter(genre__slug=self.kwargs['genre_slug'])[0].genre
         )
 
-        return dict(list(context.items()) + list(c_def.items()))
+        return context | c_def
 
 
 class ShowMovie(DataMixin, DetailView):
@@ -49,12 +51,13 @@ class ShowMovie(DataMixin, DetailView):
             current_genre=context['movies'],
             movies=context['movies']
         )
-        print(dict(list(context.items()) + list(c_def.items())))
-        return dict(list(context.items()) + list(c_def.items()))
 
-class AddMovie(DataMixin, CreateView):
+        return context | c_def
+
+class AddMovie(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddMovieForm
     template_name = 'mainapp/add_movie.html'
+    login_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,7 +66,7 @@ class AddMovie(DataMixin, CreateView):
             current_genre='Добавить фильм'
         )
 
-        return dict(list(context.items()) + list(c_def.items()))
+        return context | c_def
 
 def about(request):
     return render(request, 'mainapp/about.html')
