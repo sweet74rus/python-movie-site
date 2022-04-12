@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 from .forms import *
 from .models import *
@@ -16,10 +17,14 @@ class MovieHome(DataMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Главная')
+        c_def = self.get_user_context(
+            title='Главная',
+        )
 
         return context | c_def
 
+    def get_queryset(self):
+        return Movie.objects.all()
 
 class MovieGenre(DataMixin, ListView):
     model = Movie
@@ -27,11 +32,13 @@ class MovieGenre(DataMixin, ListView):
     context_object_name = 'movies'
     allow_empty = False
 
+    def get_queryset(self):
+        return Movie.objects.filter(genre__slug=self.kwargs['genre_slug'])
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(
             title=context['movies'][0].genre,
-            movies=Movie.objects.filter(genre__slug=self.kwargs['genre_slug']),
             current_genre=Movie.objects.filter(genre__slug=self.kwargs['genre_slug'])[0].genre
         )
 
