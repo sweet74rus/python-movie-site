@@ -1,11 +1,11 @@
 {% extends 'mainapp/base.html' %}
 
 {% block content %}
-
 <h1>{{ title }}</h1>
 
 <form method="post">
     {% csrf_token %}
+    <div class="">{{ form.non_field_errors }}</div>
 
     {% for f in form %}
     <div class="row mb-3">
@@ -14,10 +14,9 @@
       {{ f }}
     </div>
     </div>
-    <div class="">{{ f.errors }}</div>
     {% endfor %}
 
-    <button class="btn btn-outline-secondary" type="submit">Регистрация</button>
+    <button class="btn btn-outline-secondary" type="submit">Войти</button>
 </form>
 
 {% endblock %}

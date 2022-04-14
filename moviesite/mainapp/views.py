@@ -1,3 +1,5 @@
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -25,6 +27,7 @@ class MovieHome(DataMixin, ListView):
 
     def get_queryset(self):
         return Movie.objects.all()
+
 
 class MovieGenre(DataMixin, ListView):
     model = Movie
@@ -61,6 +64,7 @@ class ShowMovie(DataMixin, DetailView):
 
         return context | c_def
 
+
 class AddMovie(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddMovieForm
     template_name = 'mainapp/add_movie.html'
@@ -74,6 +78,7 @@ class AddMovie(LoginRequiredMixin, DataMixin, CreateView):
         )
 
         return context | c_def
+
 
 class RegisterUser(DataMixin, CreateView):
     form_class = RegisterUserForm
@@ -89,10 +94,25 @@ class RegisterUser(DataMixin, CreateView):
         return context | c_def
 
 
+class LoginUser(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = 'mainapp/login.html'
 
-def login(request):
-    return render(request, 'mainapp/base.html')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(
+            title='Авторизация',
+            current_genre='Авторизация'
+        )
+        return context | c_def
 
+    def get_success_url(self):
+        return reverse_lazy('home')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
 
 def about(request):
     return render(request, 'mainapp/about.html')
