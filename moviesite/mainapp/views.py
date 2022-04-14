@@ -75,6 +75,25 @@ class AddMovie(LoginRequiredMixin, DataMixin, CreateView):
 
         return context | c_def
 
+class RegisterUser(DataMixin, CreateView):
+    form_class = RegisterUserForm
+    template_name = 'mainapp/register.html'
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(
+            title='Регистрация',
+            current_genre='Регистрация'
+        )
+        return context | c_def
+
+
+
+def login(request):
+    return render(request, 'mainapp/base.html')
+
+
 def about(request):
     return render(request, 'mainapp/about.html')
 
