@@ -26,7 +26,7 @@ class MovieHome(DataMixin, ListView):
         return context | c_def
 
     def get_queryset(self):
-        return Movie.objects.all()
+        return Movie.objects.all().select_related('genre')
 
 
 class MovieGenre(DataMixin, ListView):
@@ -36,7 +36,7 @@ class MovieGenre(DataMixin, ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Movie.objects.filter(genre__slug=self.kwargs['genre_slug'])
+        return Movie.objects.filter(genre__slug=self.kwargs['genre_slug']).select_related('genre')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
