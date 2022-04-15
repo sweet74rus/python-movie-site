@@ -3,7 +3,7 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 
@@ -110,12 +110,23 @@ class LoginUser(DataMixin, LoginView):
         return reverse_lazy('home')
 
 
+class ContactFormView(DataMixin, FormView):
+    form_class = ContactForm
+    template_name = 'mainapp/contact.html'
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Обратная связь')
+        return context | c_def
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return redirect('home')
+
 def logout_user(request):
     logout(request)
     return redirect('home')
-
-def about(request):
-    return render(request, 'mainapp/about.html')
 
 
 def pageNotFound(request, exception):

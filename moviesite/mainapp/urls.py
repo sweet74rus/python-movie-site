@@ -4,7 +4,7 @@ from django.views.decorators.cache import cache_page
 
 urlpatterns = [
     path('', cache_page(60)(MovieHome.as_view()), name='home'),
-    path('about/', about, name='about'),
+    path('contact/', ContactFormView.as_view(), name='contact'),
     path('movie/<slug:movie_slug>/', ShowMovie.as_view(), name='movie'),
     path('genre/<slug:genre_slug>/', MovieGenre.as_view(), name='genre'),
     path('addmovie/', AddMovie.as_view(), name='add_movie'),
